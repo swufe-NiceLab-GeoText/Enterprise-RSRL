@@ -27,7 +27,7 @@ A deterministic information bottleneck (DIB) scores observed relations for pruni
 
 The experiments cover enterprises listed in Beijing, Shanghai and Shenzhen for 2022 and 2023, and U.S. enterprises for 2022. `BSS` combines the three Chinese exchanges within a year. Positive labels indicate a future adverse event; negative labels indicate no recorded event in the target period.
 
-**Data availability.** The full datasets and generated feature and graph artifacts are not included in this repository because of their size. The auxiliary files retained under `data/` are insufficient for training. Prepare the required inputs separately under `data/<dataset>/` before running an experiment.
+**Data availability.** Download the data from [Google Drive](https://drive.google.com/drive/folders/1SWH6_G630nr093ikv9vsIqqZFLmdaDa8?usp=sharing). The full datasets and generated feature and graph artifacts are distributed separately because of their size. Place each dataset under `data/<dataset>/` before running an experiment; the auxiliary files retained in this repository are insufficient for training.
 
 Training requires fused features, enterprise labels, edge indices, relation types and a node-index mapping. File names and directory layout are specified in the [data documentation](docs/REPRODUCIBILITY.md#dataset-layout).
 
