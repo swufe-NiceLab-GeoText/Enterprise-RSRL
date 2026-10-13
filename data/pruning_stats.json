@@ -1,0 +1,13 @@
+{
+  "2022_SZ": {
+    "num_nodes": 2760,
+    "num_edges_before": 3145534,
+    "num_edges_after": 41400,
+    "retention_ratio": 0.013161517249535373,
+    "avg_degree_before": 2279.3724637681157,
+    "avg_degree_after": 30.0,
+    "homophily_before": 0.6296167836685281,
+    "homophily_after": 0.5922222222222222,
+    "homophily_delta": -0.03739456144630593
+  }
+}
