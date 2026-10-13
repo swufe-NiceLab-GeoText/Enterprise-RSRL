@@ -1,49 +1,47 @@
 # RSRL
 
-Risk-semantic relational learning for enterprise resilience assessment.
+Code for *When Structure Lies: Risk-Semantic Relational Learning for Enterprise Resilience Assessment*.
 
-[Paper: *When Structure Lies: Risk-Semantic Relational Learning for Enterprise Resilience Assessment*](DST2027_Enterprise.pdf)
-
-RSRL predicts future adverse events by combining enterprise financial attributes, observed relations and LLM-derived risk semantics.
+RSRL predicts future adverse events from enterprise financial attributes and relational data, combining LLM-derived risk semantics with graph denoising and augmentation.
 
 ## Model
 
-The paper's pipeline has four components:
+Financial indicators are selected and scored by an LLM using a fixed financial-risk rubric. The resulting representation covers financial health, liquidity, leverage, operational efficiency and market/systemic risk.
 
-1. **Risk semantics:** select financial indicators and generate five LLM risk scores covering financial health, liquidity, leverage, operational efficiency and market/systemic risk.
-2. **Relation denoising:** use a deterministic information bottleneck (DIB) to score and prune observed relations.
-3. **Semantic augmentation:** select representative enterprises with K-means, generate semantic edges and combine repeated evidence with Noisy-OR.
-4. **Prediction:** combine relation types in a residual heterogeneous graph transformer (HGT), trained with focal and pairwise ranking losses.
+A deterministic information bottleneck (DIB) scores observed relations for pruning. K-means representatives guide the generation of risk-pattern and financial-similarity edges, with repeated evidence combined through Noisy-OR. A residual heterogeneous graph transformer (HGT) integrates the relation types and is trained with focal and pairwise ranking losses.
 
-## Files
+## Reproducibility files
 
-| Content | Location |
+| Content | Files |
 |---|---|
-| Preprocessing and training | [src/](src/) |
-| Model, hyperparameters and seeds | [src/train.py](src/train.py) |
-| Ablations and plots | [analyze/](analyze/) |
-| Baselines | [base_GNN/HetCAN/](base_GNN/HetCAN/) |
+| Financial feature selection and risk scoring | [src/select_features.py](src/select_features.py), [src/llm_enhancement.py](src/llm_enhancement.py) |
+| Relation denoising | [src/edge_pruning.py](src/edge_pruning.py) |
+| Representative sampling and semantic edges | [src/clustering_with_new_edges.py](src/clustering_with_new_edges.py) |
+| Feature and graph fusion | [src/feature_fusion.py](src/feature_fusion.py), [src/graph_fusion.py](src/graph_fusion.py) |
+| Model, training, hyperparameters and seeds | [src/train.py](src/train.py) |
+| Ablations, comparisons and plotting | [analyze/](analyze/) |
+| Prompt templates and LLM settings | [docs/PROMPTS.md](docs/PROMPTS.md) |
+| Data layout, evaluation and implementation notes | [docs/REPRODUCIBILITY.md](docs/REPRODUCIBILITY.md) |
 
 ## Data
 
-Available datasets cover enterprises from the Beijing, Shanghai and Shenzhen exchanges for 2022 and 2023, and U.S. enterprises for 2022. `BSS` combines the three Chinese exchanges within a year. Label `1` denotes a future adverse event; `0` denotes no recorded event in the target period.
+The experiments cover enterprises listed in Beijing, Shanghai and Shenzhen for 2022 and 2023, and U.S. enterprises for 2022. `BSS` combines the three Chinese exchanges within a year. Positive labels indicate a future adverse event; negative labels indicate no recorded event in the target period.
 
-Processed features, labels and graphs are stored in `data/<dataset>/`. Training on cached artifacts requires no API key. Regenerating LLM outputs requires a credential in place of `deepseek-apikey`; preprocessing paths and filenames must be aligned as described in the documentation.
+**Data availability.** The full datasets and generated feature and graph artifacts are not included in this repository because of their size. The auxiliary files retained under `data/` are insufficient for training. Prepare the required inputs separately under `data/<dataset>/` before running an experiment.
+
+Training requires fused features, enterprise labels, edge indices, relation types and a node-index mapping. File names and directory layout are specified in the [data documentation](docs/REPRODUCIBILITY.md#dataset-layout).
 
 ## Run
 
-Train on cached `2022_SH` artifacts from the repository root:
+After preparing the data, install the training dependencies and run from the repository root:
 
 ```bash
 pip install torch torch-geometric numpy pandas scikit-learn scipy
 python -c "from src.train import validate_and_report; validate_and_report('data/', ['2022_SH'])"
 ```
 
-Other configured datasets are `2022_SZ`, `2023_SH`, `2023_SZ`, `2022_BSS` and `2022_USA`. Change the dataset list in the command to select one or more datasets.
+The configured datasets are `2022_SH`, `2022_SZ`, `2023_SH`, `2023_SZ`, `2022_BSS` and `2022_USA`. Change the dataset list in the command as needed. Parameters and fixed seeds are defined in `DATASET_CONFIGS` and `VALID_SEEDS` in `src/train.py`.
 
-Hyperparameters and fixed seeds are defined in `DATASET_CONFIGS` and `VALID_SEEDS` in `src/train.py`. The current script uses stratified random splits of 60%/20%/20% and reports **F1, ROC-AUC, PR-AUC and KS**. Dependency versions are unpinned; environment notes and evaluation details are linked below.
+The current training script uses stratified random splits of 60%/20%/20% and reports **F1, ROC-AUC, PR-AUC and KS**. Training with prepared artifacts makes no LLM API calls; generating new LLM outputs requires a valid credential in place of `deepseek-apikey`.
 
-## Documentation
-
-- [Prompts and LLM settings](docs/PROMPTS.md)
-- [Data, preprocessing, evaluation and implementation differences](docs/REPRODUCIBILITY.md)
+Dependency versions are unpinned. Preprocessing requirements, evaluation details and differences between the paper and the active scripts are recorded in the [implementation notes](docs/REPRODUCIBILITY.md).
