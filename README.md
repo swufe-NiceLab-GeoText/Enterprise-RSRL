@@ -1,6 +1,6 @@
 # RSRL
 
-Code for *When Structure Lies: Risk-Semantic Relational Learning for Enterprise Resilience Assessment*.
+Code for *When Structure Lies: Risk-Semantic Relational Learning for Enterprise Resilience Assessment*.  test
 
 RSRL predicts future adverse events from enterprise financial attributes and relational data, combining LLM-derived risk semantics with graph denoising and augmentation.
 
